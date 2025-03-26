@@ -1,43 +1,70 @@
 import tkinter as tk
 import csv
 
+class TaskWindowConfig:
+    # ウィンドウ設定
+    WINDOW = {
+        'WIDTH': 400,
+        'HEIGHT': 300,
+        'TITLE': "タスク管理アプリ"
+    }
+    
+    # リスト設定
+    LIST = {
+        'WIDTH': 50,
+        'HEIGHT': 10,
+        'PAD_Y': 20
+    }
+    
+    # 入力関連設定
+    INPUT = {
+        'ENTRY_WIDTH': 35,
+        'BUTTON_TEXT': "追加",
+        'FRAME_PAD_Y': 10,
+        'ENTRY_PAD_X': 5
+    }
+    
+    # ファイル関連設定
+    FILE = {
+        'NAME': "tasks.csv",
+        'ENCODING': "utf-8"
+    }
+
 class TaskWindow:
-    WINDOW_WIDTH = 400
-    WINDOW_HEIGHT = 300
-    TITLE = "タスク管理アプリ"
-    LIST_WIDTH = 50
-    LIST_HEIGHT = 10
-    LIST_PAD_Y = 20
-    TASK_ENTRY_WIDTH = 35
-    ADD_BUTTON_TEXT = "追加"
-    INPUT_FRAME_PAD_Y = 10
-    TASK_ENTRY_PAD_X = 5
-    CSV_FILE_NAME = "tasks.csv"
-    CSV_FILE_ENCODING = "utf-8"
     def __init__(self, root):
+        self.config = TaskWindowConfig()
         self.root = root
-        self.root.title(self.TITLE)
-
-        # ウィンドウサイズと位置を設定
-        self.x = (self.root.winfo_screenwidth() - self.WINDOW_WIDTH) // 2
-        self.y = (self.root.winfo_screenheight() - self.WINDOW_HEIGHT) // 2
-        self.root.geometry(f"{self.WINDOW_WIDTH}x{self.WINDOW_HEIGHT}+{self.x}+{self.y}")
-
-        # 入力フレームの作成
+        self._setup_window()
+        self._setup_input_frame()
+        self._setup_task_list()
+    
+    def _setup_window(self):
+        self.root.title(self.config.WINDOW['TITLE'])
+        x = (self.root.winfo_screenwidth() - self.config.WINDOW['WIDTH']) // 2
+        y = (self.root.winfo_screenheight() - self.config.WINDOW['HEIGHT']) // 2
+        self.root.geometry(f"{self.config.WINDOW['WIDTH']}x{self.config.WINDOW['HEIGHT']}+{x}+{y}")
+    
+    def _setup_input_frame(self):
         self.input_frame = tk.Frame(self.root)
-        self.input_frame.pack(pady=self.INPUT_FRAME_PAD_Y)
-
-        # タスク入力欄
-        self.task_entry = tk.Entry(self.input_frame, width=self.TASK_ENTRY_WIDTH)
-        self.task_entry.pack(side=tk.LEFT, padx=self.TASK_ENTRY_PAD_X)
-
-        # 追加ボタン
-        self.add_button = tk.Button(self.input_frame, text=self.ADD_BUTTON_TEXT, command=self.add_task)
+        self.input_frame.pack(pady=self.config.INPUT['FRAME_PAD_Y'])
+        
+        self.task_entry = tk.Entry(self.input_frame, width=self.config.INPUT['ENTRY_WIDTH'])
+        self.task_entry.pack(side=tk.LEFT, padx=self.config.INPUT['ENTRY_PAD_X'])
+        
+        self.add_button = tk.Button(
+            self.input_frame, 
+            text=self.config.INPUT['BUTTON_TEXT'], 
+            command=self.add_task
+        )
         self.add_button.pack(side=tk.LEFT)
-
-        # Listbox（タスクリスト）
-        self.task_listbox = tk.Listbox(self.root, width=self.LIST_WIDTH, height=self.LIST_HEIGHT)
-        self.task_listbox.pack(pady=self.LIST_PAD_Y)
+    
+    def _setup_task_list(self):
+        self.task_listbox = tk.Listbox(
+            self.root, 
+            width=self.config.LIST['WIDTH'], 
+            height=self.config.LIST['HEIGHT']
+        )
+        self.task_listbox.pack(pady=self.config.LIST['PAD_Y'])
 
     def run(self):
         # タスクをリストに表示
@@ -51,7 +78,7 @@ class TaskWindow:
     def load_tasks(self):
         tasks = []
         try:
-            with open(self.CSV_FILE_NAME, "r", encoding=self.CSV_FILE_ENCODING) as file:
+            with open(self.config.FILE['NAME'], "r", encoding=self.config.FILE['ENCODING']) as file:
                 reader = csv.reader(file)
                 for row in reader:
                     if row:  # 空行を無視
@@ -67,7 +94,7 @@ class TaskWindow:
             # リストボックスに追加
             self.task_listbox.insert(tk.END, task)
             # CSVファイルに保存
-            with open(self.CSV_FILE_NAME, "a", encoding=self.CSV_FILE_ENCODING) as file:
+            with open(self.config.FILE['NAME'], "a", encoding=self.config.FILE['ENCODING']) as file:
                 writer = csv.writer(file)
                 writer.writerow([task])
             # 入力欄をクリア
