@@ -4,7 +4,7 @@ import csv
 class TaskWindowConfig:
     # ウィンドウ設定
     WINDOW = {
-        'WIDTH': 400,
+        'WIDTH': 450,
         'HEIGHT': 300,
         'TITLE': "タスク管理アプリ"
     }
@@ -18,10 +18,12 @@ class TaskWindowConfig:
     
     # 入力関連設定
     INPUT = {
-        'ENTRY_WIDTH': 35,
-        'BUTTON_TEXT': "追加",
+        'ENTRY_WIDTH': 30,
+        'ADD_BUTTON_TEXT': "追加",
+        'DELETE_BUTTON_TEXT': "削除",
         'FRAME_PAD_Y': 10,
-        'ENTRY_PAD_X': 5
+        'ENTRY_PAD_X': 5,
+        'BUTTON_PAD_X': 5
     }
     
     # ファイル関連設定
@@ -51,12 +53,22 @@ class TaskWindow:
         self.task_entry = tk.Entry(self.input_frame, width=self.config.INPUT['ENTRY_WIDTH'])
         self.task_entry.pack(side=tk.LEFT, padx=self.config.INPUT['ENTRY_PAD_X'])
         
+        button_frame = tk.Frame(self.input_frame)
+        button_frame.pack(side=tk.LEFT)
+        
         self.add_button = tk.Button(
-            self.input_frame, 
-            text=self.config.INPUT['BUTTON_TEXT'], 
+            button_frame,
+            text=self.config.INPUT['ADD_BUTTON_TEXT'],
             command=self.add_task
         )
-        self.add_button.pack(side=tk.LEFT)
+        self.add_button.pack(side=tk.LEFT, padx=self.config.INPUT['BUTTON_PAD_X'])
+        
+        self.delete_button = tk.Button(
+            button_frame,
+            text=self.config.INPUT['DELETE_BUTTON_TEXT'],
+            command=self.delete_task
+        )
+        self.delete_button.pack(side=tk.LEFT, padx=self.config.INPUT['BUTTON_PAD_X'])
     
     def _setup_task_list(self):
         self.task_listbox = tk.Listbox(
@@ -99,6 +111,25 @@ class TaskWindow:
                 writer.writerow([task])
             # 入力欄をクリア
             self.task_entry.delete(0, tk.END)
+
+    # タスクを削除する関数
+    def delete_task(self):
+        selection = self.task_listbox.curselection()
+        if not selection:
+            return  # 選択されていない場合は何もしない
+        
+        # リストボックスから削除
+        self.task_listbox.delete(selection[0])
+        
+        # CSVファイルを更新（全タスクを書き直し）
+        tasks = []
+        for i in range(self.task_listbox.size()):
+            tasks.append(self.task_listbox.get(i))
+        
+        with open(self.config.FILE['NAME'], "w", encoding=self.config.FILE['ENCODING']) as file:
+            writer = csv.writer(file)
+            for task in tasks:
+                writer.writerow([task])
 
 root = tk.Tk()
 window = TaskWindow(root)
