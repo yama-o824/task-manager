@@ -31,6 +31,13 @@ class TaskModel:
             return True
         return False
 
+    def edit_task(self, index, new_task):
+        if 0 <= index < len(self.tasks) and new_task:
+            self.tasks[index] = new_task
+            self._save_tasks()
+            return True
+        return False
+
     def _save_tasks(self):
         with open(self.file_config['NAME'], "w", encoding=self.file_config['ENCODING']) as file:
             writer = csv.writer(file)

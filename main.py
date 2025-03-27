@@ -28,6 +28,17 @@ class TaskWindowConfig:
         'BUTTON_PAD_X': 5
     }
     
+    # 編集ウィンドウ設定
+    EDIT = {
+        'WIDTH': 300,
+        'HEIGHT': 100,
+        'TITLE': "タスクの編集",
+        'ENTRY_WIDTH': 40,
+        'ENTRY_PAD_Y': 10,
+        'BUTTON_TEXT': "保存",
+        'BUTTON_PAD_Y': 5
+    }
+    
     # ファイル関連設定
     FILE = {
         'NAME': "tasks.csv",

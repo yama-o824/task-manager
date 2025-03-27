@@ -5,6 +5,7 @@ class TaskView:
         self.master = master
         self.config = config
         self._setup_ui()
+        self.edit_window = None  # 編集ウィンドウの参照を保持
 
     def _setup_ui(self):
         self._setup_window()
@@ -51,3 +52,41 @@ class TaskView:
         self.task_listbox.delete(0, tk.END)
         for task in tasks:
             self.task_listbox.insert(tk.END, task)
+
+    def create_edit_window(self, task, callback):
+        if self.edit_window:
+            return
+
+        self.edit_window = tk.Toplevel(self.master)
+        self.edit_window.title(self.config.EDIT['TITLE'])
+        
+        # ウィンドウサイズと位置を設定
+        x = self.master.winfo_x() + (self.config.WINDOW['WIDTH'] - self.config.EDIT['WIDTH']) // 2
+        y = self.master.winfo_y() + (self.config.WINDOW['HEIGHT'] - self.config.EDIT['HEIGHT']) // 2
+        self.edit_window.geometry(f"{self.config.EDIT['WIDTH']}x{self.config.EDIT['HEIGHT']}+{x}+{y}")
+        
+        # 編集用のEntry
+        edit_entry = tk.Entry(self.edit_window, width=self.config.EDIT['ENTRY_WIDTH'])
+        edit_entry.insert(0, task)
+        edit_entry.pack(pady=self.config.EDIT['ENTRY_PAD_Y'])
+        edit_entry.select_range(0, tk.END)
+        edit_entry.focus()
+        
+        # 保存ボタン
+        save_button = tk.Button(
+            self.edit_window,
+            text=self.config.EDIT['BUTTON_TEXT'],
+            command=lambda: self._save_edit(edit_entry.get(), callback)
+        )
+        save_button.pack(pady=self.config.EDIT['BUTTON_PAD_Y'])
+        
+        self.edit_window.protocol("WM_DELETE_WINDOW", self._close_edit_window)
+
+    def _save_edit(self, new_task, callback):
+        callback(new_task)  # コールバック関数を呼び出し
+        self._close_edit_window()
+
+    def _close_edit_window(self):
+        if self.edit_window:
+            self.edit_window.destroy()
+            self.edit_window = None
