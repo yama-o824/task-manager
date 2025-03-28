@@ -10,8 +10,8 @@ class TaskController:
         self.view.task_listbox.bind('<Double-Button-1>', self.start_edit_task)
 
     def add_task(self):
-        task = self.view.get_task_input()
-        if self.model.add_task(task):
+        task_input = self.view.get_task_input()
+        if self.model.add_task(task_input['content'], task_input['due_date']):
             self.view.clear_task_input()
             self.view.update_task_list(self.model.tasks)
 

@@ -28,6 +28,20 @@ class TaskWindowConfig:
         'BUTTON_PAD_X': 5
     }
     
+    # 日付関連設定
+    DATE = {
+        'ENTRY_WIDTH': 12,
+        'BACKGROUND': 'darkblue',
+        'FOREGROUND': 'white',
+        'BORDER_WIDTH': 2,
+        'LOCALE': 'ja_JP',
+        'DATE_PATTERN': 'y-mm-dd',
+        'CSV_FORMAT': '%Y-%m-%d',
+        'DISPLAY_FORMAT': '%Y/%m/%d',
+        'PAD_X': 5,
+        'LABEL_TEXT': '期限:'
+    }
+    
     # 編集ウィンドウ設定
     EDIT = {
         'WIDTH': 300,
@@ -39,7 +53,7 @@ class TaskWindowConfig:
         'BUTTON_PAD_Y': 5
     }
     
-    # ファイル関連設定
+    # ファイル関連設定B
     FILE = {
         'NAME': "tasks.csv",
         'ENCODING': "utf-8"
@@ -49,7 +63,7 @@ def main():
     root = tk.Tk()
     config = TaskWindowConfig()
     
-    model = TaskModel(config.FILE)
+    model = TaskModel(config)
     view = TaskView(root, config)
     controller = TaskController(model, view)
     
